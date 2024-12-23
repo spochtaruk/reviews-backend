@@ -26,8 +26,9 @@ export class ReviewsController {
     @Query('skip') skip: number = 0,
     @Query('author') author?: string,
     @Query('rating') rating?: number,
+    @Query('search') search?: string,
   ) {
-    return this.reviewsService.findAll(take, skip, { author, rating });
+    return this.reviewsService.findAll(take, skip, { author, rating, search });
   }
 
   @Get(':id')

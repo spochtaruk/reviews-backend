@@ -5,9 +5,9 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Like, Repository } from 'typeorm';
 import { Review } from './review.entity';
-import { CreateReviewType } from 'src/types';
+import { CreateReviewType, Filter, FindOptions } from 'src/types';
 
 @Injectable()
 export class ReviewsService {
@@ -32,12 +32,20 @@ export class ReviewsService {
   async findAll(
     take: number,
     skip: number,
-    filter?: { author?: string; rating?: number },
-  ): Promise<Review[]> {
+    filter?: Filter,
+  ): Promise<{ reviews: Review[]; totalPages: number }> {
     try {
-      const where: Record<string, any> = {};
-      if (filter?.author) where['author'] = filter.author;
-      if (filter?.rating) where['rating'] = filter.rating;
+      const where: FindOptionsWhere<FindOptions> = {};
+
+      const { author, rating, search } = filter || {};
+
+      if (author?.trim()) where.author = author.trim();
+      if (rating) where.rating = rating;
+      if (search?.trim()) where.title = Like(`%${search.trim()}%`);
+
+      const totalCount = await this.reviewRepository.count({ where });
+
+      const totalPages = Math.ceil(totalCount / take);
 
       const reviews = await this.reviewRepository.find({
         where,
@@ -46,9 +54,8 @@ export class ReviewsService {
         order: { createdAt: 'DESC' },
       });
 
-      return reviews;
+      return { reviews, totalPages };
     } catch (error) {
-      if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException('Failed to fetch reviews');
     }
   }
