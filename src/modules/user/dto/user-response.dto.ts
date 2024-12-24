@@ -1,6 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserResponseDto {
+  constructor(data: UserResponseDto) {
+    Object.assign(this, data);
+  }
+
   @ApiProperty({
     description: 'Username of the user',
     example: 'johndoe',

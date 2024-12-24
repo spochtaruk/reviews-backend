@@ -3,6 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Review } from '../review.entity';
 
 export class FindReviewsResponseDto {
+  constructor(data: FindReviewsResponseDto) {
+    Object.assign(this, data);
+  }
+
   @Expose()
   @ApiProperty({
     description: 'The list of reviews',

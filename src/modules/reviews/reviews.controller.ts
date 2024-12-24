@@ -31,7 +31,9 @@ export class ReviewsController {
   async create(
     @Body() createReviewDto: CreateReviewRequestDto,
   ): Promise<CreateReviewResponseDto> {
-    return await this.reviewsService.create(createReviewDto);
+    const review = await this.reviewsService.create(createReviewDto);
+
+    return new CreateReviewResponseDto(review);
   }
 
   @Get()
@@ -44,11 +46,13 @@ export class ReviewsController {
     @Query() query: FindReviewsRequestDto,
   ): Promise<FindReviewsResponseDto> {
     const { take = 10, skip = 0, author, rating, search } = query;
-    return await this.reviewsService.findAll(take, skip, {
+    const reviews = await this.reviewsService.findAll(take, skip, {
       author,
       rating,
       search,
     });
+
+    return new FindReviewsResponseDto(reviews);
   }
 
   @Get('authors')
@@ -58,7 +62,8 @@ export class ReviewsController {
 
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<CreateReviewResponseDto> {
-    return await this.reviewsService.findOne(id);
+    const review = await this.reviewsService.findOne(id);
+    return new CreateReviewResponseDto(review);
   }
 
   @Patch(':id')
@@ -71,7 +76,8 @@ export class ReviewsController {
     @Param('id') id: number,
     @Body() updateReviewDto: UpdateReviewRequestDto,
   ): Promise<UpdateReviewResponseDto> {
-    return await this.reviewsService.update(id, updateReviewDto);
+    const review = await this.reviewsService.update(id, updateReviewDto);
+    return new UpdateReviewResponseDto(review);
   }
 
   @Delete(':id')

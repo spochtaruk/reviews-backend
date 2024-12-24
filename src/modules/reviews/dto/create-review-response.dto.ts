@@ -2,6 +2,10 @@ import { Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateReviewResponseDto {
+  constructor(data: CreateReviewResponseDto) {
+    Object.assign(this, data);
+  }
+
   @Expose()
   @ApiProperty({
     description: 'Unique identifier of the review',

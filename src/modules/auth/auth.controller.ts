@@ -20,7 +20,7 @@ export class AuthController {
     description: 'Bad request (validation errors)',
   })
   async register(@Body() registerDto: RegisterRequestDto): Promise<void> {
-    return this.authService.register(
+    return await this.authService.register(
       registerDto.username,
       registerDto.password,
     );
@@ -37,6 +37,11 @@ export class AuthController {
     description: 'Unauthorized (invalid credentials)',
   })
   async login(@Body() loginDto: LoginRequestDto): Promise<LoginResponseDto> {
-    return this.authService.login(loginDto.username, loginDto.password);
+    const accessToken = await this.authService.login(
+      loginDto.username,
+      loginDto.password,
+    );
+
+    return new LoginResponseDto(accessToken);
   }
 }

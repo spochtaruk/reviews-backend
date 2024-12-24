@@ -20,6 +20,8 @@ export class UserController {
     type: UserResponseDto,
   })
   async getMe(@GetUser() user: JwtPayloadDto): Promise<UserResponseDto> {
-    return this.userService.findById(user.id);
+    const myUser = await this.userService.findById(user.id);
+
+    return new UserResponseDto(myUser);
   }
 }
