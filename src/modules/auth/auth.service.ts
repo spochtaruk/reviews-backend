@@ -33,11 +33,16 @@ export class AuthService {
     password: string,
   ): Promise<{ accessToken: string }> {
     const user = await this.userService.findByUsername(username);
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload: JwtPayload = { username };
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const payload: JwtPayload = { username: user.username, id: user.id };
     const accessToken = this.jwtService.sign(payload);
 
     return { accessToken };

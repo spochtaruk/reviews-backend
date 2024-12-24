@@ -10,7 +10,7 @@ export class UserController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async getMe(@GetUser() user: UserResponse): Promise<UserResponse> {
-    return this.userService.findById(user.userId);
+  async getMe(@GetUser() user): Promise<UserResponse> {
+    return this.userService.findById(user.id);
   }
 }
