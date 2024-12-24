@@ -31,6 +31,11 @@ export class ReviewsController {
     return this.reviewsService.findAll(take, skip, { author, rating, search });
   }
 
+  @Get('authors')
+  async getAuthors(): Promise<string[]> {
+    return this.reviewsService.findAllAuthors();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: number) {
     return this.reviewsService.findOne(id);

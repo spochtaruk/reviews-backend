@@ -112,6 +112,17 @@ export class ReviewsService {
     }
   }
 
+  async findAllAuthors(): Promise<string[]> {
+    const authors = await this.reviewRepository
+      .createQueryBuilder('review')
+      .select('DISTINCT review.author', 'author')
+      .where('review.author IS NOT NULL')
+      .orderBy('review.author', 'ASC')
+      .getRawMany();
+
+    return authors.map((row) => row.author);
+  }
+
   private validateReview(review: Partial<CreateReviewType>) {
     const { title, content, rating, author } = review;
 
