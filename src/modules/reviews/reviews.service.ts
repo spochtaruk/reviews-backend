@@ -21,9 +21,17 @@ export class ReviewsService {
 
     try {
       const savedReview = await this.reviewRepository.save(review);
-      return await this.reviewRepository.findOne({
+      const foundReview = await this.reviewRepository.findOne({
         where: { id: savedReview.id },
       });
+
+      if (!foundReview) {
+        throw new InternalServerErrorException(
+          'Failed to retrieve the created review',
+        );
+      }
+
+      return foundReview;
     } catch (error) {
       throw new InternalServerErrorException('Failed to create review');
     }
@@ -87,7 +95,18 @@ export class ReviewsService {
       }
 
       await this.reviewRepository.update(id, review);
-      return await this.reviewRepository.findOne({ where: { id } });
+
+      const updatedReview = await this.reviewRepository.findOne({
+        where: { id },
+      });
+
+      if (!updatedReview) {
+        throw new InternalServerErrorException(
+          'Failed to retrieve the updated review',
+        );
+      }
+
+      return updatedReview;
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException('Failed to update review');
