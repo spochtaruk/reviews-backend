@@ -5,6 +5,8 @@ import { typeOrmConfig } from '../../db/typeorm.config';
 import { ReviewsModule } from '../reviews/reviews.module';
 import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { AuthModule } from '../auth/auth.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    JwtModule,
   ],
+  providers: [JwtAuthGuard],
 })
 export class AppModule {}
