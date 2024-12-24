@@ -11,8 +11,6 @@ export class UserController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   async getMe(@GetUser() user: UserResponse): Promise<UserResponse> {
-    console.log('called');
-
     return this.userService.findById(user.userId);
   }
 }
