@@ -72,7 +72,7 @@ describe('ReviewsController', () => {
 
       const take = 10;
       const skip = 0;
-      const result = await reviewsController.findAll(take, skip);
+      const result = await reviewsController.findAll({ take, skip });
 
       expect(reviewsService.findAll).toHaveBeenCalledWith(take, skip, {
         author: undefined,
