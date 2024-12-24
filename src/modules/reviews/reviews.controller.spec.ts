@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ReviewsController } from './reviews.controller';
 import { ReviewsService } from './reviews.service';
-import { CreateReviewDto } from './dto/create-review.dto';
+import { CreateReviewRequestDto } from './dto/create-review-request.dto';
 
 describe('ReviewsController', () => {
   let reviewsController: ReviewsController;
@@ -35,7 +35,7 @@ describe('ReviewsController', () => {
 
   describe('create', () => {
     it('should call ReviewsService.create with the correct data', async () => {
-      const dto: CreateReviewDto = {
+      const dto: CreateReviewRequestDto = {
         title: 'Test Review',
         content: 'This is a test review.',
         rating: 5,

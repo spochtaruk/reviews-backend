@@ -1,7 +1,6 @@
 import {
   Injectable,
   NotFoundException,
-  BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,8 +16,6 @@ export class ReviewsService {
   ) {}
 
   async create(review: CreateReviewType): Promise<Review> {
-    this.validateReview(review);
-
     try {
       const savedReview = await this.reviewRepository.save(review);
       const foundReview = await this.reviewRepository.findOne({
@@ -51,16 +48,14 @@ export class ReviewsService {
       if (rating) where.rating = rating;
       if (search?.trim()) where.title = Like(`%${search.trim()}%`);
 
-      const totalCount = await this.reviewRepository.count({ where });
-
-      const totalPages = Math.ceil(totalCount / take);
-
-      const reviews = await this.reviewRepository.find({
+      const [reviews, totalCount] = await this.reviewRepository.findAndCount({
         where,
         take,
         skip,
         order: { createdAt: 'DESC' },
       });
+
+      const totalPages = Math.ceil(totalCount / take);
 
       return { reviews, totalPages };
     } catch (error) {
@@ -84,8 +79,6 @@ export class ReviewsService {
   }
 
   async update(id: number, review: Partial<CreateReviewType>): Promise<Review> {
-    this.validateReviewForUpdate(review);
-
     try {
       const existingReview = await this.reviewRepository.findOne({
         where: { id },
@@ -132,35 +125,13 @@ export class ReviewsService {
   }
 
   async findAllAuthors(): Promise<string[]> {
-    const authors = await this.reviewRepository
+    const reviews = await this.reviewRepository
       .createQueryBuilder('review')
       .select('DISTINCT review.author', 'author')
       .where('review.author IS NOT NULL')
       .orderBy('review.author', 'ASC')
       .getRawMany();
 
-    return authors.map((row) => row.author);
-  }
-
-  private validateReview(review: Partial<CreateReviewType>) {
-    const { title, content, rating, author } = review;
-
-    if (!title || !content || !rating || !author) {
-      throw new BadRequestException(
-        'Fields title, content, rating, and author cannot be empty',
-      );
-    }
-
-    if (rating < 1 || rating > 5) {
-      throw new BadRequestException('Rating must be between 1 and 5');
-    }
-  }
-
-  private validateReviewForUpdate(review: Partial<CreateReviewType>) {
-    const { rating } = review;
-
-    if (rating !== undefined && (rating < 1 || rating > 5)) {
-      throw new BadRequestException('Rating must be between 1 and 5');
-    }
+    return reviews.map((row) => row.author);
   }
 }
